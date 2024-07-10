@@ -1,3 +1,4 @@
+#The script is to wikilink the title in the index namespace of wikisource projects
 import pywikibot
 import re
 
