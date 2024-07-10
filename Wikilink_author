@@ -1,0 +1,35 @@
+#The script is to wikilink the author names (single author) in the index namespace of wikisource projects
+import pywikibot
+import re
+
+def find_and_replace_in_wikipedia_pages(input_filename, regex_pattern):
+    site = pywikibot.Site('ta', 'wikisource')
+
+    with open(input_filename, 'r', encoding='utf-8') as infile:
+        page_titles = [line.strip() for line in infile]
+
+    for title in page_titles:
+        page = pywikibot.Page(site, title)
+        page_content = page.text
+
+        # Find matches using the regex pattern
+        matches = re.findall(regex_pattern, page_content)
+
+        if matches:
+            for match in matches:
+                # Modify the match to include the author's name
+                modified_match = f"[[ஆசிரியர்:{match}|{match}]]"
+                page_content = page_content.replace(match, modified_match)
+
+            # Save the modified content back to the Wikipedia page
+            page.text = page_content
+            page.save(summary="ஆசிரியர் பெயர் இணைப்பு", minor=False)
+            print(f"Modified content saved to Wikipedia page: {title}")
+        else:
+            print(f"No matches found for regex pattern in {title}")
+
+if __name__ == "__main__":
+    input_filename = "wikisource_pages.txt"  # Specify the input file containing page titles
+    regex_to_find = r"\|Author=(.*)"  # Replace with your desired regex pattern
+
+    find_and_replace_in_wikipedia_pages(input_filename, regex_to_find)
